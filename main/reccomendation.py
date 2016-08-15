@@ -32,13 +32,13 @@ class reccomendation:
         self.data = dataset
 
     # Returns Top matches for an inputed key
-    def top_match(self,key,n):
+    def top_match(self,key,n,data):
 
 
-        scores= [(self.s.sim_pearson(key,keys,self.data),keys) for keys in self.data if keys != key]
+        scores= [(self.s.sim_pearson(key,keys,data),keys) for keys in data if keys != key]
         scores.sort()
         scores.reverse()
-        print scores[0:n]
+        return scores[0:n]
 
     def get_recommendation_collaborative(self,key):
 
@@ -66,12 +66,47 @@ class reccomendation:
         ranking = [((totals[inner_keys]/simSums[inner_keys]),inner_keys) for inner_keys in totals.keys()]
 
         # Return the sorted list
-        ranking.sort( )
-        ranking.reverse( )
-        print ranking
+        ranking.sort()
+        ranking.reverse()
 
         print totals
 
+    def transform_data(self):
+        result = {}
+
+        for keys in self.data:
+            for inner_keys in self.data[keys]:
+
+                result.setdefault(inner_keys,{})
+
+                #Flip items
+                result[inner_keys][keys] = self.data[keys][inner_keys]
+        # print result
+        return result
+
+    def CalculateSimilar_innerkeys(self):
+        result={}
+
+        transformed = self.transform_data()
+
+        for inner_keys in transformed:
+            scores = self.top_match(inner_keys,10,transformed)
+            result[inner_keys] = scores
+        # print result
+        return result
+
+    def get_recommendation_contentbased(self,key):
+        userRating = self.data[key]
+        scores = {}
+        totslSim = {}
+        transformed_sim = CalculateSimilar_innerkeys()
+        for inner_keys in self.data[key]:
+            for other_inner_keys in transformed_sim[inner_keys]:
+                # Ignore if this user has already rated this item
+                if other_inner_keys in userRatings: continue
+
+                scores.setdefault(other_inner_keys,0)
+                scores[other_inner_keys]+=
 
 
 
@@ -99,4 +134,8 @@ Dataset={'Lisa Rose': {'Lady in the Water': 2.5, 'Snakes on a Plane': 3.5,
 
 r  = reccomendation(Dataset)
 # r.top_match('Toby',3)
-r.get_recommendation_collaborative('Claudia Puig')
+# r.get_recommendation_collaborative('Claudia Puig')
+new = r.transform_data()
+# r1  = reccomendation(new)
+r.CalculateSimilar_innerkeys()
+# r1.get_recommendation_collaborative('Just My Luck')
