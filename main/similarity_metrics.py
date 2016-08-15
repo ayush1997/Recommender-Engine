@@ -28,7 +28,7 @@ class similarity:
         for inner_keys in data[key1]:
             if inner_keys in data[key2]:
                 common.append(inner_keys)
-        print common
+        # print common
         return common
 
     def sim_pearson(self,key1,key2,data):

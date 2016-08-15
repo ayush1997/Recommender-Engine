@@ -40,6 +40,39 @@ class reccomendation:
         scores.reverse()
         print scores[0:n]
 
+    def get_recommendation_collaborative(self,key):
+
+        totals ={}
+        simSums = {}
+        for keys in self.data:
+            print keys
+            # don't compare the key to key
+            if keys == key:
+                continue
+            sim = self.s.sim_pearson(key,keys,self.data)
+            print sim
+            # ignore scores of zero or lower
+            if sim<=0: continue
+            for inner_keys in self.data[keys]:
+
+                if inner_keys not in self.data[key]:
+                    totals.setdefault(inner_keys,0)
+                    print inner_keys
+                    totals[inner_keys]+=self.data[keys][inner_keys]*sim
+                    simSums.setdefault(inner_keys,0)
+                    simSums[inner_keys]+=sim
+
+        # Create the normalized list
+        ranking = [((totals[inner_keys]/simSums[inner_keys]),inner_keys) for inner_keys in totals.keys()]
+
+        # Return the sorted list
+        ranking.sort( )
+        ranking.reverse( )
+        print ranking
+
+        print totals
+
+
 
 
 
@@ -65,4 +98,5 @@ Dataset={'Lisa Rose': {'Lady in the Water': 2.5, 'Snakes on a Plane': 3.5,
 
 
 r  = reccomendation(Dataset)
-r.top_match('Toby',3)
+# r.top_match('Toby',3)
+r.get_recommendation_collaborative('Claudia Puig')
